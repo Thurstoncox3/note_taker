@@ -32,15 +32,29 @@ app.post('/api/notes', (req, res) => {
     const newNote = {
         title, 
         text, 
-        v4: uuidv4()
+        id: uuidv4()
     };
     fs.readFile('./db/db.json', function(err, data){
         const currNote = JSON.parse(data);
         currNote.push(newNote);
-        fs.writeFile('./db/db.json', [JSON.stringify(currNote)], function (err){
+        fs.writeFile('./db/db.json', JSON.stringify(currNote), function (err){
             console.log(newNote);
         })
         res.sendFile(path.join(__dirname, '/public/notes.html'));
+    })
+})
+
+app.delete('/api/notes/:id', function(req, res){
+    const clicked = req.params.id;
+    console.log(clicked);
+    fs.readFile('./db/db.json', function (err, data){
+        const json = JSON.parse(data);
+        const filtered = json.filter(note => note.id !== clicked);
+        fs.writeFile('./db/db.json', JSON.stringify(filtered), function (err){
+            console.log('note deleted');
+        })
+        res.sendFile(path.join(__dirname, '/public/notes.html'));
+
     })
 })
 
